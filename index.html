@@ -56,7 +56,6 @@
     <div id="tracks" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
   </div>
 
-  <!-- Player Modal -->
   <div id="playerModal">
     <div class="bg-zinc-900 rounded-2xl p-4 max-w-3xl w-full mx-4">
       <div class="flex justify-between items-center mb-4">
@@ -81,43 +80,57 @@
           title: "YARA YARA FUNK",
           artist: "JOKO PHONK",
           youtube: "https://youtu.be/EkXu0bPHP-0",
-          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/hq720.jpg"
+          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/hq720.jpg",
+          rating: "10/10"
         },
         {
           title: "TIKI TIKI",
           artist: "QMIIR",
           youtube: "https://youtu.be/ScMkywEH5JM",
-          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/ab67616d0000b27301913aba303b2a409c0cd157.jpg"
+          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/ab67616d0000b27301913aba303b2a409c0cd157.jpg",
+          rating: "10/10"
         },
         {
           title: "MONTAGEM ALQUIMIA",
           artist: "h6itam",
           youtube: "https://youtu.be/zHm8GFK0m-E",
-          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/artworks-pcTwuvarADB94YKo-1at33A-t500x500.jpg"
+          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/artworks-pcTwuvarADB94YKo-1at33A-t500x500.jpg",
+          rating: "9.5/10"
+        },
+        {
+          title: "Vem Vem",
+          artist: "Jmilton",
+          youtube: "https://youtu.be/5MzBUJv0US0?si=Do2kK90aJKgFFwCh",
+          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/ab67616d0000b2739c4d42890be9407cf3ab5557.jpg",
+          rating: "9.2/10"
         },
         {
           title: "NO BATIDÃO",
           artist: "ZXKAI",
           youtube: "https://youtu.be/ZB0amc1TZ3Y?si=y4S9B0aivPB5io6R",
-          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/Zxkai%2C_Slxughter_-_No_Batid%C3%A3o.png"
+          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/Zxkai%2C_Slxughter_-_No_Batid%C3%A3o.png",
+          rating: "9/10"
         },
         {
           title: "MATADORA",
           artist: "DJ Asul",
           youtube: "https://youtu.be/YIYBhDeQfT0?si=Ed86njD7tKJeKtmV",
-          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/artworks-g2NqowERzqO1-0-t500x500.jpg"
+          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/artworks-g2NqowERzqO1-0-t500x500.jpg",
+          rating: "9/10"
         },
         {
           title: "PASSO BEM SOLTO",
           artist: "ATLXS",
           youtube: "https://youtu.be/KgayxOF4Y7E?si=1aCNVdbd_rw-9A5K",
-          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/Passo_Bem_Solto_-_Atlxs.jpg"
+          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/Passo_Bem_Solto_-_Atlxs.jpg",
+          rating: "8/10"
         },
         {
           title: "SHAPE OF YOU FUNK",
           artist: "fennecxx",
           youtube: "https://youtu.be/HhK0koY-9Ko?si=3omq5o3vSlrpRxwG",
-          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/shape.jpg"
+          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/shape.jpg",
+          rating: "1/10"
         },
       ];
 
@@ -142,15 +155,20 @@
               <img src="${track.image}" class="w-full h-52 object-cover"
                    onerror="this.src='https://via.placeholder.com/300x200/1f2937/ffffff?text=No+Image'">
               <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-             
+              
               <button onclick="playTrack('${track.youtube}', '${track.title}', '${track.artist}')"
                       class="absolute bottom-4 right-4 bg-orange-600 hover:bg-orange-500 w-12 h-12 rounded-full flex items-center justify-center transition shadow-lg">
                 <i class="fa-solid fa-play text-xl ml-0.5"></i>
               </button>
             </div>
-            <div class="p-4">
-              <h3 class="font-semibold text-lg leading-tight">${track.title}</h3>
-              <p class="text-zinc-400 text-sm mt-1">${track.artist}</p>
+            <div class="p-4 flex justify-between items-start gap-2">
+              <div class="min-w-0">
+                <h3 class="font-semibold text-lg leading-tight truncate">${track.title}</h3>
+                <p class="text-zinc-400 text-sm mt-1 truncate">${track.artist}</p>
+              </div>
+              <span class="bg-zinc-800 text-orange-500 text-xs font-bold px-2 py-1 rounded border border-zinc-700 whitespace-nowrap">
+                ${track.rating}
+              </span>
             </div>
           `;
           tracksContainer.appendChild(card);
