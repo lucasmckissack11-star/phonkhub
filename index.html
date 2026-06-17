@@ -79,6 +79,8 @@
 
       const supabaseUrl = 'https://wnokaajysxspgkbvjabn.supabase.co';
       const supabaseKey = 'sb_publishable__7iTa1bGPcGw7Q0j1qM5Wg_4uLzKM3f';
+      
+      // FIXED: Renamed to supabaseClient to prevent variable conflicts
       const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
       const tracks = [
@@ -94,7 +96,7 @@
       ];
 
       let dbVotes = {};
-      const COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes in milliseconds
+      const COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
 
       const tracksContainer = document.getElementById('tracks');
       const searchInput = document.getElementById('search');
@@ -167,7 +169,7 @@
         });
       }
 
-      // SECURED: No longer sends raw custom numbers from the browser client!
+      // SECURED: Uses database functions exclusively
       window.handleVote = async function(event, trackId, change) {
         event.stopPropagation();
         
@@ -186,7 +188,7 @@
         
         renderTracks(tracks);
 
-        // This triggers the secure database function we created
+        // Uses secure RPC routine
         const { error } = await supabaseClient
           .rpc('increment_vote', { track_id: trackId });
 
@@ -218,7 +220,7 @@
       fetchLiveVotes().then(() => {
         renderTracks(tracks); 
       }).catch((err) => {
-        console.error("Database connection blocked by viewer, but site is still running!", err);
+        console.error("Database connection issue:", err);
       });
 
     });
