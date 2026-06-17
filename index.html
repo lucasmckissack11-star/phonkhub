@@ -58,7 +58,7 @@
       <i class="fa-solid fa-earth-americas text-orange-500"></i> Global Ranked Chart
     </h2>
     <div id="tracks" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-      <p class="text-zinc-500">Loading global votes...</p>
+      <p class="text-zinc-500">Loading tracks...</p>
     </div>
   </div>
 
@@ -75,27 +75,26 @@
   </div>
 
   <script>
-    // Injected your actual keys right here:
-    const supabaseUrl = 'https://wnokaajysxspgkbvjabn.supabase.co';
-    const supabaseKey = 'sb_publishable__7iTa1bGPcGw7Q0j1qM5Wg_4uLzKM3f';
+    document.addEventListener('DOMContentLoaded', function() {
 
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+      const supabaseUrl = 'https://wnokaajysxspgkbvjabn.supabase.co';
+      const supabaseKey = 'sb_publishable__7iTa1bGPcGw7Q0j1qM5Wg_4uLzKM3f';
+      const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    document.addEventListener('DOMContentLoaded', async function() {
-
-      // All your original tracks, images, and links preserved
+      // All default votes set to 0
       const tracks = [
-        { id: "t1", title: "YARA YARA FUNK", artist: "JOKO PHONK", youtube: "https://youtu.be/EkXu0bPHP-0", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/hq720.jpg", defaultVotes: 1240 },
-        { id: "t2", title: "TIKI TIKI", artist: "QMIIR", youtube: "https://youtu.be/ScMkywEH5JM", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/ab67616d0000b27301913aba303b2a409c0cd157.jpg", defaultVotes: 1105 },
-        { id: "t3", title: "MONTAGEM ALQUIMIA", artist: "h6itam", youtube: "https://youtu.be/zHm8GFK0m-E", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/artworks-pcTwuvarADB94YKo-1at33A-t500x500.jpg", defaultVotes: 980 },
-        { id: "t4", title: "Vem Vem", artist: "Jmilton", youtube: "https://youtu.be/5MzBUJv0US0?si=Do2kK90aJKgFFwCh", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/ab67616d0000b2739c4d42890be9407cf3ab5557.jpg", defaultVotes: 850 },
-        { id: "t5", title: "NO BATIDÃO", artist: "ZXKAI", youtube: "https://youtu.be/ZB0amc1TZ3Y?si=y4S9B0aivPB5io6R", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/Zxkai%2C_Slxughter_-_No_Batid%C3%A3o.png", defaultVotes: 720 },
-        { id: "t6", title: "MATADORA", artist: "DJ Asul", youtube: "https://youtu.be/YIYBhDeQfT0?si=Ed86njD7tKJeKtmV", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/artworks-g2NqowERzqO1-0-t500x500.jpg", defaultVotes: 610 },
-        { id: "t7", title: "PASSO BEM SOLTO", artist: "ATLXS", youtube: "https://youtu.be/KgayxOF4Y7E?si=1aCNVdbd_rw-9A5K", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/Passo_Bem_Solto_-_Atlxs.jpg", defaultVotes: 430 },
-        { id: "t8", title: "SHAPE OF YOU FUNK", artist: "fennecxx", youtube: "https://youtu.be/HhK0koY-9Ko?si=3omq5o3vSlrpRxwG", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/shape.jpg", defaultVotes: 45 },
+        { id: "t1", title: "YARA YARA FUNK", artist: "JOKO PHONK", youtube: "https://youtu.be/EkXu0bPHP-0", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/hq720.jpg", defaultVotes: 0 },
+        { id: "t2", title: "TIKI TIKI", artist: "QMIIR", youtube: "https://youtu.be/ScMkywEH5JM", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/ab67616d0000b27301913aba303b2a409c0cd157.jpg", defaultVotes: 0 },
+        { id: "t3", title: "MONTAGEM ALQUIMIA", artist: "h6itam", youtube: "https://youtu.be/zHm8GFK0m-E", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/artworks-pcTwuvarADB94YKo-1at33A-t500x500.jpg", defaultVotes: 0 },
+        { id: "t4", title: "Vem Vem", artist: "Jmilton", youtube: "https://youtu.be/5MzBUJv0US0?si=Do2kK90aJKgFFwCh", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/ab67616d0000b2739c4d42890be9407cf3ab5557.jpg", defaultVotes: 0 },
+        { id: "t5", title: "NO BATIDÃO", artist: "ZXKAI", youtube: "https://youtu.be/ZB0amc1TZ3Y?si=y4S9B0aivPB5io6R", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/Zxkai%2C_Slxughter_-_No_Batid%C3%A3o.png", defaultVotes: 0 },
+        { id: "t6", title: "MATADORA", artist: "DJ Asul", youtube: "https://youtu.be/YIYBhDeQfT0?si=Ed86njD7tKJeKtmV", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/artworks-g2NqowERzqO1-0-t500x500.jpg", defaultVotes: 0 },
+        { id: "t7", title: "PASSO BEM SOLTO", artist: "ATLXS", youtube: "https://youtu.be/KgayxOF4Y7E?si=1aCNVdbd_rw-9A5K", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/Passo_Bem_Solto_-_Atlxs.jpg", defaultVotes: 0 },
+        { id: "t8", title: "SHAPE OF YOU FUNK", artist: "fennecxx", youtube: "https://youtu.be/HhK0koY-9Ko?si=3omq5o3vSlrpRxwG", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/shape.jpg", defaultVotes: 0 },
       ];
 
       let dbVotes = {};
+      let votedTracks = new Set();
 
       const tracksContainer = document.getElementById('tracks');
       const searchInput = document.getElementById('search');
@@ -104,16 +103,12 @@
       const nowPlaying = document.getElementById('nowPlaying');
 
       async function fetchLiveVotes() {
-        try {
-          const { data, error } = await supabase.from('tracks').select('id, votes');
-          if (error) throw error;
-          if (data) {
-            data.forEach(row => {
-              dbVotes[row.id] = row.votes;
-            });
-          }
-        } catch (err) {
-          console.error("Error fetching live database votes:", err);
+        const { data, error } = await supabaseClient.from('tracks').select('id, votes');
+        if (error) throw error;
+        if (data) {
+          data.forEach(row => {
+            dbVotes[row.id] = row.votes;
+          });
         }
       }
 
@@ -129,6 +124,9 @@
         sortedTracks.forEach((track, index) => {
           const rank = index + 1;
           const currentVotes = getCurrentVotes(track.id, track.defaultVotes);
+          
+          const hasVoted = votedTracks.has(track.id);
+          const upBtnClass = hasVoted ? 'text-zinc-700 cursor-not-allowed' : 'text-gray-400 hover:text-orange-500 transition';
           
           const card = document.createElement('div');
           card.className = 'track-card bg-zinc-900 rounded-2xl overflow-hidden cursor-pointer relative';
@@ -146,10 +144,9 @@
                 <h3 class="font-semibold text-lg leading-tight truncate">${track.title}</h3>
                 <p class="text-zinc-400 text-sm mt-1 truncate">${track.artist}</p>
               </div>
-              <div class="flex items-center gap-2 bg-zinc-800 rounded-lg border border-zinc-700 px-2 py-1 z-20 shadow-inner">
-                <button onclick="handleVote(event, '${track.id}', 1)" class="text-gray-400 hover:text-orange-500 transition px-1"><i class="fa-solid fa-arrow-up"></i></button>
+              <div class="flex items-center gap-2 bg-zinc-800 rounded-lg border border-zinc-700 px-3 py-1 z-20 shadow-inner">
+                <button onclick="handleVote(event, '${track.id}', 1)" class="${upBtnClass} px-1"><i class="fa-solid fa-arrow-up"></i></button>
                 <span id="vote-count-${track.id}" class="text-sm font-bold text-white w-8 text-center">${currentVotes}</span>
-                <button onclick="handleVote(event, '${track.id}', -1)" class="text-gray-400 hover:text-blue-500 transition px-1"><i class="fa-solid fa-arrow-down"></i></button>
               </div>
             </div>
           `;
@@ -160,14 +157,22 @@
       window.handleVote = async function(event, trackId, change) {
         event.stopPropagation();
         
+        if (votedTracks.has(trackId)) {
+          return;
+        }
+
+        votedTracks.add(trackId);
+        
         const track = tracks.find(t => t.id === trackId);
         let currentVotes = getCurrentVotes(trackId, track.defaultVotes);
         let newVotes = currentVotes + change;
         
         document.getElementById(`vote-count-${trackId}`).textContent = newVotes;
         dbVotes[trackId] = newVotes;
+        
+        renderTracks(tracks);
 
-        const { error } = await supabase
+        const { error } = await supabaseClient
           .from('tracks')
           .upsert({ id: trackId, votes: newVotes });
 
@@ -175,6 +180,8 @@
           console.error("Failed to sync vote to database:", error);
           document.getElementById(`vote-count-${trackId}`).textContent = currentVotes;
           dbVotes[trackId] = currentVotes;
+          votedTracks.delete(trackId); 
+          renderTracks(tracks);
         }
       };
 
@@ -192,9 +199,13 @@
         renderTracks(filtered);
       });
 
-      // Load up the database values first, then render everything sorted correctly!
-      await fetchLiveVotes();
       renderTracks(tracks);
+
+      fetchLiveVotes().then(() => {
+        renderTracks(tracks); 
+      }).catch((err) => {
+        console.error("Database connection blocked by viewer, but site is still running!", err);
+      });
 
     });
   </script>
