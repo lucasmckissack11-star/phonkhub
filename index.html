@@ -81,7 +81,6 @@
       const supabaseKey = 'sb_publishable__7iTa1bGPcGw7Q0j1qM5Wg_4uLzKM3f';
       const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-      // All default votes set to 0
       const tracks = [
         { id: "t1", title: "YARA YARA FUNK", artist: "JOKO PHONK", youtube: "https://youtu.be/EkXu0bPHP-0", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/hq720.jpg", defaultVotes: 0 },
         { id: "t2", title: "TIKI TIKI", artist: "QMIIR", youtube: "https://youtu.be/ScMkywEH5JM", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/ab67616d0000b27301913aba303b2a409c0cd157.jpg", defaultVotes: 0 },
@@ -95,7 +94,7 @@
       ];
 
       let dbVotes = {};
-      let votedTracks = new Set();
+      const COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes in milliseconds
 
       const tracksContainer = document.getElementById('tracks');
       const searchInput = document.getElementById('search');
@@ -117,6 +116,20 @@
         return dbVotes[trackId] !== undefined ? dbVotes[trackId] : defaultVotes;
       }
 
+      // Check if the 10-minute timer is still running for a track
+      function isVotedOnCooldown(trackId) {
+        const lastVoteTime = localStorage.getItem(`voted_time_${trackId}`);
+        if (!lastVoteTime) return false;
+
+        const timePassed = Date.now() - parseInt(lastVoteTime, 10);
+        if (timePassed < COOLDOWN_MS) {
+          return true; // Still on cooldown
+        } else {
+          localStorage.removeItem(`voted_time_${trackId}`); // Timer finished, clear it!
+          return false;
+        }
+      }
+
       function renderTracks(tracksToRender) {
         tracksContainer.innerHTML = '';
         
@@ -126,8 +139,9 @@
           const rank = index + 1;
           const currentVotes = getCurrentVotes(track.id, track.defaultVotes);
           
-          const hasVoted = votedTracks.has(track.id);
-          const upBtnClass = hasVoted ? 'text-zinc-700 cursor-not-allowed' : 'text-gray-400 hover:text-orange-500 transition';
+          // Check cooldown status for the UI
+          const isOnCooldown = isVotedOnCooldown(track.id);
+          const upBtnClass = isOnCooldown ? 'text-zinc-700 cursor-not-allowed' : 'text-gray-400 hover:text-orange-500 transition';
           
           const card = document.createElement('div');
           card.className = 'track-card bg-zinc-900 rounded-2xl overflow-hidden cursor-pointer relative';
@@ -158,11 +172,13 @@
       window.handleVote = async function(event, trackId, change) {
         event.stopPropagation();
         
-        if (votedTracks.has(trackId)) {
+        // Stop them if the 10-minute timer is still going
+        if (isVotedOnCooldown(trackId)) {
           return;
         }
 
-        votedTracks.add(trackId);
+        // Save the exact millisecond they voted
+        localStorage.setItem(`voted_time_${trackId}`, Date.now().toString());
         
         const track = tracks.find(t => t.id === trackId);
         let currentVotes = getCurrentVotes(trackId, track.defaultVotes);
@@ -171,6 +187,7 @@
         document.getElementById(`vote-count-${trackId}`).textContent = newVotes;
         dbVotes[trackId] = newVotes;
         
+        // Re-render so the button immediately turns gray
         renderTracks(tracks);
 
         const { error } = await supabaseClient
@@ -181,7 +198,7 @@
           console.error("Failed to sync vote to database:", error);
           document.getElementById(`vote-count-${trackId}`).textContent = currentVotes;
           dbVotes[trackId] = currentVotes;
-          votedTracks.delete(trackId); 
+          localStorage.removeItem(`voted_time_${trackId}`); // Remove the timer block if database fails
           renderTracks(tracks);
         }
       };
