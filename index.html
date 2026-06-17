@@ -4,16 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Phonk Hub</title>
+  
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/727/727204.png" type="image/png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     body { font-family: 'Segoe UI', sans-serif; }
     .track-card { transition: all 0.3s; }
     .track-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5); }
   
-    .rank-badge {
-      background: linear-gradient(135deg, #ec4899, #f43f5e);
-    }
+    .rank-badge { background: linear-gradient(135deg, #ec4899, #f43f5e); }
     .highlight-box {
       background-color: #f97316;
       color: #000;
@@ -37,15 +40,6 @@
     }
   </style>
 </head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-THXMJ34KZ8"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-THXMJ34KZ8');
-</script>
 
 <body class="bg-zinc-950 text-white min-h-screen">
 
@@ -61,9 +55,11 @@
 
   <div class="max-w-7xl mx-auto px-6 py-8">
     <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-      <i class="fa-solid fa-fire text-orange-500"></i> Ranked Phonk Chart
+      <i class="fa-solid fa-earth-americas text-orange-500"></i> Global Ranked Chart
     </h2>
-    <div id="tracks" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
+    <div id="tracks" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <p class="text-zinc-500">Loading global votes...</p>
+    </div>
   </div>
 
   <div id="playerModal">
@@ -73,76 +69,33 @@
         <button onclick="closePlayer()" class="text-3xl text-gray-400 hover:text-white">×</button>
       </div>
       <div class="aspect-video bg-black rounded-xl overflow-hidden">
-        <iframe id="youtubePlayer" width="100%" height="100%" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen></iframe>
+        <iframe id="youtubePlayer" width="100%" height="100%" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </div>
     </div>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    // Injected your actual keys right here:
+    const supabaseUrl = 'https://wnokaajysxspgkbvjabn.supabase.co';
+    const supabaseKey = 'sb_publishable__7iTa1bGPcGw7Q0j1qM5Wg_4uLzKM3f';
 
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    document.addEventListener('DOMContentLoaded', async function() {
+
+      // All your original tracks, images, and links preserved
       const tracks = [
-        {
-          title: "YARA YARA FUNK",
-          artist: "JOKO PHONK",
-          youtube: "https://youtu.be/EkXu0bPHP-0",
-          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/hq720.jpg",
-          rating: "10/10"
-        },
-        {
-          title: "TIKI TIKI",
-          artist: "QMIIR",
-          youtube: "https://youtu.be/ScMkywEH5JM",
-          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/ab67616d0000b27301913aba303b2a409c0cd157.jpg",
-          rating: "10/10"
-        },
-        {
-          title: "MONTAGEM ALQUIMIA",
-          artist: "h6itam",
-          youtube: "https://youtu.be/zHm8GFK0m-E",
-          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/artworks-pcTwuvarADB94YKo-1at33A-t500x500.jpg",
-          rating: "9.5/10"
-        },
-        {
-          title: "Vem Vem",
-          artist: "Jmilton",
-          youtube: "https://youtu.be/5MzBUJv0US0?si=Do2kK90aJKgFFwCh",
-          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/ab67616d0000b2739c4d42890be9407cf3ab5557.jpg",
-          rating: "9.2/10"
-        },
-        {
-          title: "NO BATIDÃO",
-          artist: "ZXKAI",
-          youtube: "https://youtu.be/ZB0amc1TZ3Y?si=y4S9B0aivPB5io6R",
-          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/Zxkai%2C_Slxughter_-_No_Batid%C3%A3o.png",
-          rating: "9/10"
-        },
-        {
-          title: "MATADORA",
-          artist: "DJ Asul",
-          youtube: "https://youtu.be/YIYBhDeQfT0?si=Ed86njD7tKJeKtmV",
-          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/artworks-g2NqowERzqO1-0-t500x500.jpg",
-          rating: "9/10"
-        },
-        {
-          title: "PASSO BEM SOLTO",
-          artist: "ATLXS",
-          youtube: "https://youtu.be/KgayxOF4Y7E?si=1aCNVdbd_rw-9A5K",
-          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/Passo_Bem_Solto_-_Atlxs.jpg",
-          rating: "8/10"
-        },
-        {
-          title: "SHAPE OF YOU FUNK",
-          artist: "fennecxx",
-          youtube: "https://youtu.be/HhK0koY-9Ko?si=3omq5o3vSlrpRxwG",
-          image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/shape.jpg",
-          rating: "1/10"
-        },
+        { id: "t1", title: "YARA YARA FUNK", artist: "JOKO PHONK", youtube: "https://youtu.be/EkXu0bPHP-0", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/hq720.jpg", defaultVotes: 1240 },
+        { id: "t2", title: "TIKI TIKI", artist: "QMIIR", youtube: "https://youtu.be/ScMkywEH5JM", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/ab67616d0000b27301913aba303b2a409c0cd157.jpg", defaultVotes: 1105 },
+        { id: "t3", title: "MONTAGEM ALQUIMIA", artist: "h6itam", youtube: "https://youtu.be/zHm8GFK0m-E", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/artworks-pcTwuvarADB94YKo-1at33A-t500x500.jpg", defaultVotes: 980 },
+        { id: "t4", title: "Vem Vem", artist: "Jmilton", youtube: "https://youtu.be/5MzBUJv0US0?si=Do2kK90aJKgFFwCh", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/ab67616d0000b2739c4d42890be9407cf3ab5557.jpg", defaultVotes: 850 },
+        { id: "t5", title: "NO BATIDÃO", artist: "ZXKAI", youtube: "https://youtu.be/ZB0amc1TZ3Y?si=y4S9B0aivPB5io6R", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/Zxkai%2C_Slxughter_-_No_Batid%C3%A3o.png", defaultVotes: 720 },
+        { id: "t6", title: "MATADORA", artist: "DJ Asul", youtube: "https://youtu.be/YIYBhDeQfT0?si=Ed86njD7tKJeKtmV", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/artworks-g2NqowERzqO1-0-t500x500.jpg", defaultVotes: 610 },
+        { id: "t7", title: "PASSO BEM SOLTO", artist: "ATLXS", youtube: "https://youtu.be/KgayxOF4Y7E?si=1aCNVdbd_rw-9A5K", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/Passo_Bem_Solto_-_Atlxs.jpg", defaultVotes: 430 },
+        { id: "t8", title: "SHAPE OF YOU FUNK", artist: "fennecxx", youtube: "https://youtu.be/HhK0koY-9Ko?si=3omq5o3vSlrpRxwG", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/shape.jpg", defaultVotes: 45 },
       ];
+
+      let dbVotes = {};
 
       const tracksContainer = document.getElementById('tracks');
       const searchInput = document.getElementById('search');
@@ -150,40 +103,80 @@
       const iframe = document.getElementById('youtubePlayer');
       const nowPlaying = document.getElementById('nowPlaying');
 
-      function renderTracks(filteredTracks) {
+      async function fetchLiveVotes() {
+        try {
+          const { data, error } = await supabase.from('tracks').select('id, votes');
+          if (error) throw error;
+          if (data) {
+            data.forEach(row => {
+              dbVotes[row.id] = row.votes;
+            });
+          }
+        } catch (err) {
+          console.error("Error fetching live database votes:", err);
+        }
+      }
+
+      function getCurrentVotes(trackId, defaultVotes) {
+        return dbVotes[trackId] !== undefined ? dbVotes[trackId] : defaultVotes;
+      }
+
+      function renderTracks(tracksToRender) {
         tracksContainer.innerHTML = '';
         
-        filteredTracks.forEach((track, index) => {
+        const sortedTracks = [...tracksToRender].sort((a, b) => getCurrentVotes(b.id, b.defaultVotes) - getCurrentVotes(a.id, a.defaultVotes));
+
+        sortedTracks.forEach((track, index) => {
           const rank = index + 1;
+          const currentVotes = getCurrentVotes(track.id, track.defaultVotes);
+          
           const card = document.createElement('div');
           card.className = 'track-card bg-zinc-900 rounded-2xl overflow-hidden cursor-pointer relative';
           card.innerHTML = `
-            <div class="rank-badge absolute top-3 left-3 text-white text-xs font-bold w-7 h-7 flex items-center justify-center rounded-full shadow-lg z-10">
-              #${rank}
-            </div>
+            <div class="rank-badge absolute top-3 left-3 text-white text-xs font-bold w-7 h-7 flex items-center justify-center rounded-full shadow-lg z-10">#${rank}</div>
             <div class="relative">
-              <img src="${track.image}" class="w-full h-52 object-cover"
-                   onerror="this.src='https://via.placeholder.com/300x200/1f2937/ffffff?text=No+Image'">
-              <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-              
-              <button onclick="playTrack('${track.youtube}', '${track.title}', '${track.artist}')"
-                      class="absolute bottom-4 right-4 bg-orange-600 hover:bg-orange-500 w-12 h-12 rounded-full flex items-center justify-center transition shadow-lg">
+              <img src="${track.image}" class="w-full h-52 object-cover" onerror="this.src='https://via.placeholder.com/300x200/1f2937/ffffff?text=No+Image'">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none"></div>
+              <button onclick="playTrack('${track.youtube}', '${track.title}', '${track.artist}')" class="absolute bottom-4 right-4 bg-orange-600 hover:bg-orange-500 w-12 h-12 rounded-full flex items-center justify-center transition shadow-lg z-20">
                 <i class="fa-solid fa-play text-xl ml-0.5"></i>
               </button>
             </div>
-            <div class="p-4 flex justify-between items-start gap-2">
+            <div class="p-4 flex justify-between items-center gap-2">
               <div class="min-w-0">
                 <h3 class="font-semibold text-lg leading-tight truncate">${track.title}</h3>
                 <p class="text-zinc-400 text-sm mt-1 truncate">${track.artist}</p>
               </div>
-              <span class="bg-zinc-800 text-orange-500 text-xs font-bold px-2 py-1 rounded border border-zinc-700 whitespace-nowrap">
-                ${track.rating}
-              </span>
+              <div class="flex items-center gap-2 bg-zinc-800 rounded-lg border border-zinc-700 px-2 py-1 z-20 shadow-inner">
+                <button onclick="handleVote(event, '${track.id}', 1)" class="text-gray-400 hover:text-orange-500 transition px-1"><i class="fa-solid fa-arrow-up"></i></button>
+                <span id="vote-count-${track.id}" class="text-sm font-bold text-white w-8 text-center">${currentVotes}</span>
+                <button onclick="handleVote(event, '${track.id}', -1)" class="text-gray-400 hover:text-blue-500 transition px-1"><i class="fa-solid fa-arrow-down"></i></button>
+              </div>
             </div>
           `;
           tracksContainer.appendChild(card);
         });
       }
+
+      window.handleVote = async function(event, trackId, change) {
+        event.stopPropagation();
+        
+        const track = tracks.find(t => t.id === trackId);
+        let currentVotes = getCurrentVotes(trackId, track.defaultVotes);
+        let newVotes = currentVotes + change;
+        
+        document.getElementById(`vote-count-${trackId}`).textContent = newVotes;
+        dbVotes[trackId] = newVotes;
+
+        const { error } = await supabase
+          .from('tracks')
+          .upsert({ id: trackId, votes: newVotes });
+
+        if (error) {
+          console.error("Failed to sync vote to database:", error);
+          document.getElementById(`vote-count-${trackId}`).textContent = currentVotes;
+          dbVotes[trackId] = currentVotes;
+        }
+      };
 
       window.playTrack = function(url, title, artist) {
         const videoId = url.split('/').pop().split('?')[0];
@@ -191,21 +184,18 @@
         nowPlaying.textContent = `${title} - ${artist}`;
         modal.style.display = 'flex';
       };
-
-      window.closePlayer = function() {
-        modal.style.display = 'none';
-        iframe.src = '';
-      };
+      window.closePlayer = function() { modal.style.display = 'none'; iframe.src = ''; };
 
       searchInput.addEventListener('input', () => {
         const term = searchInput.value.toLowerCase().trim();
-        const filtered = term === '' ? tracks : tracks.filter(track =>
-          track.title.toLowerCase().includes(term) || track.artist.toLowerCase().includes(term)
-        );
+        const filtered = term === '' ? tracks : tracks.filter(t => t.title.toLowerCase().includes(term) || t.artist.toLowerCase().includes(term));
         renderTracks(filtered);
       });
 
+      // Load up the database values first, then render everything sorted correctly!
+      await fetchLiveVotes();
       renderTracks(tracks);
+
     });
   </script>
 </body>
