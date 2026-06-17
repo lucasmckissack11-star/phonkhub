@@ -116,16 +116,15 @@
         return dbVotes[trackId] !== undefined ? dbVotes[trackId] : defaultVotes;
       }
 
-      // Check if the 10-minute timer is still running for a track
       function isVotedOnCooldown(trackId) {
         const lastVoteTime = localStorage.getItem(`voted_time_${trackId}`);
         if (!lastVoteTime) return false;
 
         const timePassed = Date.now() - parseInt(lastVoteTime, 10);
         if (timePassed < COOLDOWN_MS) {
-          return true; // Still on cooldown
+          return true;
         } else {
-          localStorage.removeItem(`voted_time_${trackId}`); // Timer finished, clear it!
+          localStorage.removeItem(`voted_time_${trackId}`);
           return false;
         }
       }
@@ -139,7 +138,6 @@
           const rank = index + 1;
           const currentVotes = getCurrentVotes(track.id, track.defaultVotes);
           
-          // Check cooldown status for the UI
           const isOnCooldown = isVotedOnCooldown(track.id);
           const upBtnClass = isOnCooldown ? 'text-zinc-700 cursor-not-allowed' : 'text-gray-400 hover:text-orange-500 transition';
           
@@ -169,36 +167,34 @@
         });
       }
 
+      // SECURED: No longer sends raw custom numbers from the browser client!
       window.handleVote = async function(event, trackId, change) {
         event.stopPropagation();
         
-        // Stop them if the 10-minute timer is still going
         if (isVotedOnCooldown(trackId)) {
           return;
         }
 
-        // Save the exact millisecond they voted
         localStorage.setItem(`voted_time_${trackId}`, Date.now().toString());
         
         const track = tracks.find(t => t.id === trackId);
         let currentVotes = getCurrentVotes(trackId, track.defaultVotes);
-        let newVotes = currentVotes + change;
+        let newVotes = currentVotes + 1; 
         
         document.getElementById(`vote-count-${trackId}`).textContent = newVotes;
         dbVotes[trackId] = newVotes;
         
-        // Re-render so the button immediately turns gray
         renderTracks(tracks);
 
+        // This triggers the secure database function we created
         const { error } = await supabaseClient
-          .from('tracks')
-          .upsert({ id: trackId, votes: newVotes });
+          .rpc('increment_vote', { track_id: trackId });
 
         if (error) {
-          console.error("Failed to sync vote to database:", error);
+          console.error("Failed to sync vote securely:", error);
           document.getElementById(`vote-count-${trackId}`).textContent = currentVotes;
           dbVotes[trackId] = currentVotes;
-          localStorage.removeItem(`voted_time_${trackId}`); // Remove the timer block if database fails
+          localStorage.removeItem(`voted_time_${trackId}`); 
           renderTracks(tracks);
         }
       };
