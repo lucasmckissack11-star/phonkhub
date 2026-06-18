@@ -1,12 +1,18 @@
-import { createClient } from '@supabase/supabase-js'
+// Paste your new URL and Anon key right here
+const supabaseUrl = 'https://wnokaajysxspgkbvjabn.supabase.co';
+const supabaseKey = 'sb_publishable_mNUqJAx-8FIn6TqeplN4lg_URLUT-73';
 
-// Pulling safe keys from your hidden .env file
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-const supabaseClient = createClient(supabaseUrl, supabaseKey);
+// Create the connection using the CDN we loaded in the HTML
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 document.addEventListener('DOMContentLoaded', function() {
+
+  // --- DEVICE ID GENERATOR ---
+  let deviceId = localStorage.getItem('supabase_device_id');
+  if (!deviceId) {
+    deviceId = crypto.randomUUID(); 
+    localStorage.setItem('supabase_device_id', deviceId);
+  }
 
   const tracks = [
     { id: "t1", title: "YARA YARA FUNK", artist: "JOKO PHONK", youtube: "https://youtu.be/EkXu0bPHP-0", image: "https://raw.githubusercontent.com/lucasmckissack11-star/imagesfr/refs/heads/main/hq720.jpg", defaultVotes: 0 },
@@ -21,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
   ];
 
   let dbVotes = {};
-  const COOLDOWN_MS = 10 * 60 * 1000; // 10 minutes
 
   const tracksContainer = document.getElementById('tracks');
   const searchInput = document.getElementById('search');
@@ -43,19 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
     return dbVotes[trackId] !== undefined ? dbVotes[trackId] : defaultVotes;
   }
 
-  function isVotedOnCooldown(trackId) {
-    const lastVoteTime = localStorage.getItem(`voted_time_${trackId}`);
-    if (!lastVoteTime) return false;
-
-    const timePassed = Date.now() - parseInt(lastVoteTime, 10);
-    if (timePassed < COOLDOWN_MS) {
-      return true;
-    } else {
-      localStorage.removeItem(`voted_time_${trackId}`);
-      return false;
-    }
-  }
-
   function renderTracks(tracksToRender) {
     tracksContainer.innerHTML = '';
     
@@ -64,9 +56,6 @@ document.addEventListener('DOMContentLoaded', function() {
     sortedTracks.forEach((track, index) => {
       const rank = index + 1;
       const currentVotes = getCurrentVotes(track.id, track.defaultVotes);
-      
-      const isOnCooldown = isVotedOnCooldown(track.id);
-      const upBtnClass = isOnCooldown ? 'text-zinc-700 cursor-not-allowed' : 'text-gray-400 hover:text-orange-500 transition';
       
       const card = document.createElement('div');
       card.className = 'track-card bg-zinc-900 rounded-2xl overflow-hidden cursor-pointer relative';
@@ -84,8 +73,10 @@ document.addEventListener('DOMContentLoaded', function() {
             <h3 class="font-semibold text-lg leading-tight truncate">${track.title}</h3>
             <p class="text-zinc-400 text-sm mt-1 truncate">${track.artist}</p>
           </div>
-          <div class="flex items-center gap-2 bg-zinc-800 rounded-lg border border-zinc-700 px-3 py-1 z-20 shadow-inner">
-            <button onclick="handleVote(event, '${track.id}', 1)" class="${upBtnClass} px-1"><i class="fa-solid fa-arrow-up"></i></button>
+          <div class="flex items-center gap-2 bg-zinc-800 rounded-lg border border-zinc-700 px-3 py-1 z-20 shadow-inner hover:border-orange-500 transition">
+            <button onclick="handleVote(event, '${track.id}', 1)" class="text-gray-400 hover:text-orange-500 transition px-1">
+              <i class="fa-solid fa-arrow-up"></i>
+            </button>
             <span id="vote-count-${track.id}" class="text-sm font-bold text-white w-8 text-center">${currentVotes}</span>
           </div>
         </div>
@@ -94,37 +85,37 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Attached to window so the HTML buttons can still find these functions
+  // --- THE NEW SECURE VOTE HANDLER ---
   window.handleVote = async function(event, trackId, change) {
     event.stopPropagation();
     
-    if (isVotedOnCooldown(trackId)) {
-      return;
-    }
-
-    localStorage.setItem(`voted_time_${trackId}`, Date.now().toString());
-    
+    // Optimistic UI update (makes it look instantly responsive)
     const track = tracks.find(t => t.id === trackId);
     let currentVotes = getCurrentVotes(trackId, track.defaultVotes);
     let newVotes = currentVotes + 1; 
     
     document.getElementById(`vote-count-${trackId}`).textContent = newVotes;
-    dbVotes[trackId] = newVotes;
     
-    renderTracks(tracks);
-
+    // Send it to your Supabase bouncer
     const { error } = await supabaseClient
-      .rpc('increment_vote', { track_id: trackId });
+      .rpc('increment_vote_secure', { 
+        p_track_id: trackId, 
+        p_device_id: deviceId 
+      });
 
     if (error) {
-      console.error("Failed to sync vote securely:", error);
+      // If Supabase blocks it, revert the score back to normal and alert the user
+      console.error("Vote blocked:", error.message);
+      alert(error.message); // This will pop up saying "Chill out! You must wait 10 minutes."
       document.getElementById(`vote-count-${trackId}`).textContent = currentVotes;
-      dbVotes[trackId] = currentVotes;
-      localStorage.removeItem(`voted_time_${trackId}`); 
+    } else {
+      // If it succeeds, lock in the new score and re-sort the list
+      dbVotes[trackId] = newVotes;
       renderTracks(tracks);
     }
   };
 
+  // --- MODAL CONTROLS ---
   window.playTrack = function(url, title, artist) {
     const videoId = url.split('/').pop().split('?')[0];
     iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
@@ -137,14 +128,14 @@ document.addEventListener('DOMContentLoaded', function() {
     iframe.src = ''; 
   };
 
+  // --- SEARCH BAR ---
   searchInput.addEventListener('input', () => {
     const term = searchInput.value.toLowerCase().trim();
     const filtered = term === '' ? tracks : tracks.filter(t => t.title.toLowerCase().includes(term) || t.artist.toLowerCase().includes(term));
     renderTracks(filtered);
   });
 
-  renderTracks(tracks);
-
+  // Load everything up
   fetchLiveVotes().then(() => {
     renderTracks(tracks); 
   }).catch((err) => {
